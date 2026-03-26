@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Memoria - Rosario</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .tablero {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            width: 80%;
+            margin: 20px auto;
+        }
+        .tarjeta {
+            width: 100px;
+            height: 100px;
+            background-color: #007bff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+            position: relative;
+            background-image: url('logo.png');
+            background-size: cover;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+        .tarjeta .contenido {
+            display: none;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            backface-visibility: hidden;
+            transform: rotateY(180deg);
+        }
+        .tarjeta .contenido img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .tarjeta.volteada {
+            background-image: none;
+            transform: rotateY(180deg);
+        }
+        .tarjeta.volteada .contenido {
+            display: flex;
+        }
+        .tarjeta.oculta {
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s 0.6s, opacity 0.6s;
+        }
+        button {
+            background-color: #FBCA11;
+            color: #003366;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        #reiniciar-btn {
+            display: none;
+        }
+        .mensaje-ganador {
+            font-size: 24px;
+            color: #007bff;
+            font-weight: bold;
+            margin: 20px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Juego de Memoria - Rosario</h1>
+    <p>Tiempo restante: <span id="tiempo">120</span> segundos</p>
+    <div class="tablero" id="tablero"></div>
+    <div id="controles">
+        <button id="iniciar-btn" onclick="iniciarJuego()">Iniciar Juego</button>
+        <button id="reiniciar-btn" onclick="reiniciarJuego()">Reiniciar</button>
+    </div>
+    <div class="mensaje-ganador" id="mensaje-ganador">
+        ¡Felicidades! Has encontrado todas las parejas.
+    </div>
+
+    <script>
+        const datos = [
+            { imagen: "castagnino.jpg", referencia: "Museo Municipal de Bellas Artes 'Juan B. Castagnino'" },
+            { imagen: "catedral.jpg", referencia: "Catedral Basílica Santuario 'Nuestra Señora del Rosario'" },
+            { imagen: "escarapela.png", referencia: "Cuna de la Escarapela" },
+            { imagen: "estevez.jpg", referencia: "Museo de Arte Decorativo 'Firma y Odilo Estévez'" },
+            { imagen: "helado.jpg", referencia: "Capital Nacional del Helado Artesanal" },
+            { imagen: "independencia.jpg", referencia: "Parque Independencia" },
+            { imagen: "monumento.jpg", referencia: "Monumento Histórico Nacional a la Bandera" },
+            { imagen: "puente.jpg", referencia: "Puente 'Nuestra Señora del Rosario'" },
+            { imagen: "urquiza.jpg", referencia: "Parque Urquiza" },
+            { imagen: "gigante.png", referencia: "Estadio Mundialista 'Gigante de Arroyito'" },
+            { imagen: "coloso.jpg", referencia: "Estadio 'Marcelo A. Bielsa'" }
+        ];
+
+        let tarjetas = [];
+        let tarjetasSeleccionadas = [];
+        let tiempoRestante = 120;
+        let temporizador;
+        let juegoIniciado = false;
+
+        function crearTablero() {
+            tarjetas = [];
+            datos.forEach((item, index) => {
+                tarjetas.push({ id: index, contenido: `<img src="${item.imagen}" alt="Imagen">`, pareja: index });
+                tarjetas.push({ id: index + datos.length, contenido: `<div class='texto'>${item.referencia}</div>`, pareja: index });
+            });
+            tarjetas = tarjetas.sort(() => Math.random() - 0.5);
+            
+            const tablero = document.getElementById("tablero");
+            tablero.innerHTML = "";
+            tarjetas.forEach((tarjeta, i) => {
+                const div = document.createElement("div");
+                div.classList.add("tarjeta");
+                div.dataset.pareja = tarjeta.pareja;
+                div.innerHTML = `<div class="contenido">${tarjeta.contenido}</div>`;
+                div.addEventListener("click", () => girarTarjeta(div));
+                tablero.appendChild(div);
+            });
+        }
+
+        function girarTarjeta(tarjeta) {
+            if (!juegoIniciado || tarjeta.classList.contains("volteada") || tarjetasSeleccionadas.length >= 2) {
+                return;
+            }
+            tarjeta.classList.add("volteada");
+            tarjetasSeleccionadas.push(tarjeta);
+
+            if (tarjetasSeleccionadas.length === 2) {
+                setTimeout(verificarPareja, 1000);
+            }
+        }
+
+function verificarPareja() {
+    const [tarjeta1, tarjeta2] = tarjetasSeleccionadas;
+    if (tarjeta1.dataset.pareja === tarjeta2.dataset.pareja) {
+        setTimeout(() => {
+            tarjeta1.classList.add("oculta");
+            tarjeta2.classList.add("oculta");
+            
+            // Verificar si todas las tarjetas están ocultas DESPUÉS de ocultar el par actual
+            const tarjetasVisibles = document.querySelectorAll('.tarjeta:not(.oculta)');
+if (tarjetasVisibles.length === 0) {
+    setTimeout(() => {
+        finalizarJuego(true);
+    }, 500); // Pequeño delay para que se complete la animación
+}
+ else {
+        setTimeout(() => {
+            tarjeta1.classList.remove("volteada");
+            tarjeta2.classList.remove("volteada");
+        }, 300);
+    }
+    tarjetasSeleccionadas = [];
+}
+
+        function iniciarTemporizador() {
+            tiempoRestante = 120;
+            document.getElementById("tiempo").textContent = tiempoRestante;
+            clearInterval(temporizador);
+            temporizador = setInterval(() => {
+                tiempoRestante--;
+                document.getElementById("tiempo").textContent = tiempoRestante;
+                if (tiempoRestante <= 0) {
+                    finalizarJuego(false);
+                }
+            }, 1000);
+        }
+
+        function iniciarJuego() {
+            juegoIniciado = true;
+            document.getElementById("iniciar-btn").style.display = "none";
+            document.getElementById("reiniciar-btn").style.display = "none";
+            document.getElementById("mensaje-ganador").style.display = "none";
+            iniciarTemporizador();
+            crearTablero();
+        }
+
+function finalizarJuego(ganado) {
+    juegoIniciado = false;
+    clearInterval(temporizador);
+    
+    if (ganado) {
+        document.getElementById("mensaje-ganador").style.display = "block";
+        alert("¡Felicidades! Has encontrado todas las parejas.");
+    } else {
+        alert("Se acabó el tiempo. Inténtalo de nuevo.");
+    }
+    
+    document.getElementById("reiniciar-btn").style.display = "inline-block";
+}
+
+        function reiniciarJuego() {
+            document.getElementById("reiniciar-btn").style.display = "none";
+            iniciarJuego();
+        }
+
+        // Inicialización
+        crearTablero();
+        document.getElementById("tiempo").textContent = tiempoRestante;
+    </script>
+</body>
+</html>
