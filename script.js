@@ -783,7 +783,7 @@ function buildMemoryBoard() {
 
 function handleMemoryCardClick(cardElement, cardData) {
     if (!memoryState.started || memoryState.lockBoard) return;
-    if (cardElement.classList.contains("is-flipped") || cardElement.classList.contains("is-hidden")) return;
+    if (cardElement.classList.contains("is-flipped") || cardElement.classList.contains("is-matched")) return;
 
     cardElement.classList.add("is-flipped");
     memoryState.selected.push({ element: cardElement, data: cardData });
@@ -805,8 +805,8 @@ function handleMemoryCardClick(cardElement, cardData) {
 
         if (isMatch) {
             setTimeout(() => {
-                firstCard.element.classList.add("is-hidden");
-                secondCard.element.classList.add("is-hidden");
+                firstCard.element.classList.add("is-matched");
+                secondCard.element.classList.add("is-matched");
                 memoryState.matchedPairs++;
                 updateMemoryProgress();
                 setNotice(memoryFeedback, "¡Pareja encontrada! Seguí así.", "success");
