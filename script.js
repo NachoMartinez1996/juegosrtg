@@ -136,7 +136,7 @@ const triviaDecks = [
                 options: [
                     { text: "En teatro", correct: false },
                     { text: "En educación", correct: true },
-                    { text: "En política", correct: false 
+                    { text: "En política", correct: false }
                 ],
                 reference: "El CMD Noroeste ubicado en Provincias Unidas 150 bis fue inaugurado el 18 de septiembre de 2006, se encuentra emplazado en un predio con significativa vegetación, anteriormente ocupado por una fábrica. Tomó su nombre de quienes llevaron adelante una de las experiencias pedagógicas más innovadoras del país. Con el espíritu de la 'Escuela Nueva', Olga y Leticia Cossettini se desempeñaron durante fructuosos años a la cabeza de la Escuela Nº 69 'Dr. Gabriel Carrasco', ubicada en Barrio Alberdi y reconocida por las autoridades estatales como establecimiento educativo piloto. Contemplando las características de una población diversa (hijos de pescadores, obreros, comerciantes de clase media y familias acomodadas) las hermanas Cossettini realizaron una reforma profunda de la vida escolar, permitiendo —según dichos de la propia Olga— 'abrir de par en par las puertas de las aulas a la vida'.",
                 source: "Municipalidad de Rosario - www.rosario.gov.ar"
