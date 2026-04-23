@@ -1,4 +1,4 @@
-const VERSION_CACHE = "1.1.0";
+const VERSION_CACHE = "1.1.01";
 const CACHE_SHELL = `rosario-shell-${VERSION_CACHE}`;
 const CACHE_RUNTIME = `rosario-runtime-${VERSION_CACHE}`;
 const APP_SHELL = "./index.html";
