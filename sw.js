@@ -1,11 +1,14 @@
-const VERSION_CACHE = "1.1.01";
+const VERSION_CACHE = "1.2.00";
 const CACHE_SHELL = `rosario-shell-${VERSION_CACHE}`;
 const CACHE_RUNTIME = `rosario-runtime-${VERSION_CACHE}`;
-const APP_SHELL = "./index.html";
+const HOME_SHELL = "./index.html";
+const GAME_SHELL = "./juegos.html";
+const APP_SHELL = GAME_SHELL;
 
 const shellFiles = [
     "./",
     "./index.html",
+    "./juegos.html",
     "./style.css",
     "./script.js",
     "./manifest.json",
@@ -13,8 +16,8 @@ const shellFiles = [
     "./apple-touch-icon.png",
     "./android-chrome-192x192.png",
     "./android-chrome-512x512.png",
-    "./logo.png",
     "./Logo.png",
+    "./Logos/LogoGemini.png",
     "./castagnino.jpg",
     "./catedral.jpg",
     "./coloso.jpg",
@@ -38,6 +41,7 @@ function isUpdatableResource(request) {
         request.destination === "style" ||
         request.destination === "document" ||
         path.endsWith("/index.html") ||
+        path.endsWith("/juegos.html") ||
         path.endsWith("/script.js") ||
         path.endsWith("/style.css") ||
         path.endsWith("/manifest.json")
@@ -53,6 +57,7 @@ function getTargetCache(request) {
         request.destination === "style" ||
         request.destination === "document" ||
         path.endsWith("/index.html") ||
+        path.endsWith("/juegos.html") ||
         path.endsWith("/script.js") ||
         path.endsWith("/style.css") ||
         path.endsWith("/manifest.json")
@@ -82,9 +87,24 @@ async function saveResponse(cacheName, request, response) {
     return response;
 }
 
-async function getOfflineShell() {
+function getNavigationShellKey(request) {
+    const url = new URL(request.url);
+    const path = url.pathname.toLowerCase();
+
+    if (path.endsWith("/juegos.html")) {
+        return GAME_SHELL;
+    }
+
+    return HOME_SHELL;
+}
+
+async function getOfflineShell(request) {
+    const preferredShell = request ? getNavigationShellKey(request) : APP_SHELL;
+
     return (
-        await caches.match(APP_SHELL, { ignoreSearch: true }) ||
+        await caches.match(preferredShell, { ignoreSearch: true }) ||
+        await caches.match(HOME_SHELL, { ignoreSearch: true }) ||
+        await caches.match(GAME_SHELL, { ignoreSearch: true }) ||
         await caches.match("./", { ignoreSearch: true })
     );
 }
@@ -96,7 +116,7 @@ function createOfflineFallback() {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Rosario Te Guio sin conexión</title>
+  <title>El Mago de los Tours sin conexión</title>
   <style>
     body {
       margin: 0;
@@ -130,7 +150,7 @@ function createOfflineFallback() {
 </head>
 <body>
   <main>
-    <h1>Rosario Te Guio</h1>
+    <h1>El Mago de los Tours</h1>
     <p>No encontramos una copia local completa para abrir esta vez. Volvé a entrar una vez con conexión para guardar los archivos esenciales en este dispositivo.</p>
   </main>
 </body>
@@ -187,10 +207,10 @@ self.addEventListener("fetch", event => {
         event.respondWith((async () => {
             try {
                 const networkResponse = await fetch(request);
-                await saveResponse(CACHE_SHELL, APP_SHELL, networkResponse.clone());
+                await saveResponse(CACHE_SHELL, getNavigationShellKey(request), networkResponse.clone());
                 return networkResponse;
             } catch (error) {
-                const offlineShell = await getOfflineShell();
+                const offlineShell = await getOfflineShell(request);
                 return offlineShell || createOfflineFallback();
             }
         })());

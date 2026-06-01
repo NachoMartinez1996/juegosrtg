@@ -392,6 +392,26 @@ button:disabled {
     border: 1px solid rgba(11, 94, 168, 0.24);
 }
 
+.link-button,
+.site-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    text-decoration: none;
+    font: inherit;
+    border-radius: 999px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease, color 160ms ease, opacity 160ms ease;
+}
+
+.link-button:hover,
+.site-button:hover {
+    transform: translateY(-1px);
+}
+
 .notice {
     border-radius: 20px;
     padding: 16px 18px;
@@ -1234,9 +1254,674 @@ button:disabled {
 
 @media (hover: none) {
     button:hover,
+    .link-button:hover,
+    .site-button:hover,
     .quiz-option:hover,
     .trivia-option:hover:not(:disabled) {
         transform: none;
         box-shadow: none;
+    }
+}
+
+/* Tours landing */
+html {
+    scroll-behavior: smooth;
+}
+
+body.tour-site {
+    background:
+        radial-gradient(circle at top left, rgba(246, 190, 0, 0.24), transparent 30%),
+        radial-gradient(circle at 85% 12%, rgba(239, 106, 75, 0.16), transparent 26%),
+        linear-gradient(180deg, #fff8e6 0%, #f8f0d8 45%, #fdfdf9 100%);
+}
+
+.site-header {
+    position: sticky;
+    top: 12px;
+    z-index: 20;
+    width: min(1180px, calc(100% - 32px));
+    min-height: 72px;
+    margin: 12px auto 0;
+    padding: 10px 12px;
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) auto auto;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid rgba(20, 50, 74, 0.12);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 14px 34px rgba(11, 52, 89, 0.12);
+    backdrop-filter: blur(14px);
+}
+
+.brand-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--ink);
+    text-decoration: none;
+    min-width: 0;
+}
+
+.brand-mark img {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    object-fit: cover;
+    box-shadow: 0 10px 22px rgba(11, 52, 89, 0.18);
+    flex: 0 0 48px;
+}
+
+.brand-mark span {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.brand-mark strong {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.12rem;
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+}
+
+.brand-mark small {
+    color: var(--brand-blue);
+    font-weight: 700;
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.site-nav a {
+    color: var(--ink-muted);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 700;
+    padding: 10px 12px;
+    border-radius: 999px;
+}
+
+.site-nav a:hover {
+    color: var(--brand-blue);
+    background: rgba(11, 94, 168, 0.08);
+}
+
+.site-button {
+    gap: 8px;
+    padding: 12px 18px;
+    border: 0;
+    background: linear-gradient(135deg, var(--brand-blue), var(--brand-blue-deep));
+    color: #ffffff;
+    box-shadow: 0 12px 24px rgba(11, 94, 168, 0.22);
+    font-weight: 700;
+}
+
+.site-button--small {
+    min-height: 42px;
+    padding: 10px 14px;
+    font-size: 0.92rem;
+}
+
+.site-button--ghost {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.36);
+    box-shadow: none;
+}
+
+.site-eyebrow {
+    margin: 0;
+    color: var(--brand-gold);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.tour-hero {
+    min-height: min(760px, calc(100vh - 108px));
+    min-height: min(760px, calc(100dvh - 108px));
+    width: min(1180px, calc(100% - 32px));
+    margin: 18px auto 0;
+    display: grid;
+    align-items: end;
+    position: relative;
+    overflow: hidden;
+    border-radius: 30px;
+    border: 1px solid rgba(20, 50, 74, 0.12);
+    background:
+        linear-gradient(90deg, rgba(8, 58, 102, 0.9) 0%, rgba(20, 50, 74, 0.76) 46%, rgba(20, 50, 74, 0.2) 100%),
+        linear-gradient(180deg, rgba(20, 50, 74, 0.04), rgba(20, 50, 74, 0.62)),
+        url("Fotos%20sobre%20m%C3%AD/photo_2026-06-01_16-43-19.jpg") center 42% / cover;
+    box-shadow: var(--shadow);
+}
+
+.tour-hero::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 36%;
+    background: linear-gradient(180deg, transparent, rgba(8, 58, 102, 0.72));
+    pointer-events: none;
+}
+
+.tour-hero__content {
+    position: relative;
+    z-index: 1;
+    width: min(720px, 100%);
+    padding: clamp(28px, 6vw, 76px);
+    color: #ffffff;
+}
+
+.tour-hero h1,
+.site-section h2 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1;
+}
+
+.tour-hero h1 {
+    margin-top: 12px;
+    max-width: 9ch;
+    font-size: clamp(3.1rem, 8vw, 6.4rem);
+    text-wrap: balance;
+}
+
+.tour-hero__subtitle {
+    margin: 14px 0 0;
+    color: var(--brand-gold);
+    font-size: clamp(1.35rem, 3vw, 2.1rem);
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+}
+
+.tour-hero__copy {
+    max-width: 58ch;
+    margin: 20px 0 0;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: clamp(1rem, 1.6vw, 1.2rem);
+    line-height: 1.65;
+}
+
+.tour-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.quick-strip {
+    width: min(1120px, calc(100% - 32px));
+    margin: -24px auto 0;
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    padding: 12px;
+    border-radius: 24px;
+    border: 1px solid rgba(20, 50, 74, 0.12);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 18px 38px rgba(11, 52, 89, 0.14);
+    backdrop-filter: blur(12px);
+}
+
+.quick-strip div {
+    min-height: 88px;
+    display: grid;
+    align-content: center;
+    gap: 4px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(251, 244, 222, 0.7);
+}
+
+.quick-strip strong {
+    font-family: Georgia, "Times New Roman", serif;
+    color: var(--brand-blue);
+    font-size: clamp(1.25rem, 2.4vw, 1.8rem);
+    line-height: 1;
+}
+
+.quick-strip span {
+    color: var(--ink-muted);
+    font-size: 0.9rem;
+    line-height: 1.35;
+}
+
+.site-section {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: clamp(54px, 8vw, 92px) 0 0;
+    scroll-margin-top: 112px;
+}
+
+.intro-section,
+.info-section,
+.contact-section {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+    gap: clamp(24px, 5vw, 58px);
+    align-items: center;
+}
+
+.section-copy {
+    display: grid;
+    gap: 16px;
+}
+
+.section-copy h2,
+.section-heading--centered h2 {
+    color: var(--ink);
+    font-size: clamp(2.25rem, 5vw, 4.2rem);
+    text-wrap: balance;
+}
+
+.section-copy p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 1.03rem;
+    line-height: 1.72;
+}
+
+.portrait-frame {
+    margin: 0;
+    overflow: hidden;
+    border-radius: 26px;
+    border: 1px solid rgba(20, 50, 74, 0.12);
+    background: rgba(255, 255, 255, 0.82);
+    box-shadow: var(--shadow);
+}
+
+.portrait-frame img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+.portrait-frame figcaption {
+    padding: 14px 16px;
+    color: var(--ink-muted);
+    line-height: 1.5;
+}
+
+.section-heading--centered {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.tour-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.tour-card {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+    min-width: 0;
+    border-radius: 24px;
+    border: 1px solid rgba(20, 50, 74, 0.12);
+    background: rgba(255, 255, 255, 0.84);
+    box-shadow: 0 16px 34px rgba(11, 52, 89, 0.1);
+}
+
+.tour-card img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    background: var(--bg-cream);
+}
+
+.tour-card__body {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    padding: 18px;
+}
+
+.tour-card__tag {
+    margin: 0;
+    color: var(--brand-blue);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.tour-card h3 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.45rem;
+    line-height: 1.08;
+    color: var(--ink);
+}
+
+.tour-card p:not(.tour-card__tag) {
+    margin: 0;
+    color: var(--ink-muted);
+    line-height: 1.58;
+}
+
+.tour-card span {
+    color: var(--ink);
+    font-size: 0.94rem;
+    line-height: 1.45;
+    font-weight: 700;
+}
+
+.tour-card .site-button {
+    justify-self: start;
+    margin-top: 2px;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.gallery-grid img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 18px;
+    border: 1px solid rgba(20, 50, 74, 0.1);
+    box-shadow: 0 12px 26px rgba(11, 52, 89, 0.1);
+}
+
+.gallery-grid img:nth-child(1),
+.gallery-grid img:nth-child(4) {
+    grid-column: span 2;
+    aspect-ratio: 4 / 3;
+}
+
+.info-section {
+    align-items: start;
+}
+
+.faq-list {
+    display: grid;
+    gap: 12px;
+}
+
+.faq-list details {
+    border: 1px solid rgba(20, 50, 74, 0.12);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.84);
+    box-shadow: 0 12px 26px rgba(11, 52, 89, 0.08);
+    overflow: hidden;
+}
+
+.faq-list summary {
+    cursor: pointer;
+    padding: 18px 20px;
+    color: var(--ink);
+    font-weight: 800;
+}
+
+.faq-list p {
+    margin: 0;
+    padding: 0 20px 18px;
+    color: var(--ink-muted);
+    line-height: 1.6;
+}
+
+.contact-section {
+    align-items: start;
+    padding-bottom: 72px;
+}
+
+.contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.contact-links a {
+    color: var(--brand-blue);
+    text-decoration: none;
+    font-weight: 800;
+    padding: 10px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(11, 94, 168, 0.14);
+}
+
+.booking-form {
+    display: grid;
+    gap: 14px;
+    padding: clamp(18px, 3vw, 28px);
+    border-radius: 24px;
+    border: 1px solid rgba(20, 50, 74, 0.12);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+}
+
+.booking-form label {
+    display: grid;
+    gap: 8px;
+    color: var(--ink-muted);
+    font-weight: 800;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.booking-form input,
+.booking-form select,
+.booking-form textarea {
+    width: 100%;
+    min-width: 0;
+    border: 1px solid rgba(20, 50, 74, 0.16);
+    border-radius: 16px;
+    background: var(--bg-soft);
+    color: var(--ink);
+    font: inherit;
+    font-size: 1rem;
+    letter-spacing: 0;
+    text-transform: none;
+    padding: 13px 14px;
+    outline: none;
+}
+
+.booking-form input:focus,
+.booking-form select:focus,
+.booking-form textarea:focus {
+    border-color: rgba(11, 94, 168, 0.5);
+    box-shadow: 0 0 0 4px rgba(11, 94, 168, 0.1);
+}
+
+.booking-form textarea {
+    resize: vertical;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.form-feedback {
+    min-height: 1.35em;
+    margin: 0;
+    color: var(--brand-blue);
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.site-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 30px 16px 36px;
+    color: rgba(255, 255, 255, 0.78);
+    background: var(--brand-blue-deep);
+    text-align: center;
+}
+
+.site-footer img {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    object-fit: cover;
+}
+
+.site-footer p {
+    margin: 0;
+    line-height: 1.55;
+}
+
+.site-footer strong {
+    color: #ffffff;
+}
+
+.site-footer a {
+    color: var(--brand-gold);
+    font-weight: 800;
+    text-decoration: none;
+}
+
+@media (max-width: 1020px) {
+    .site-header {
+        grid-template-columns: 1fr auto;
+    }
+
+    .site-nav {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+    }
+
+    .tour-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .quick-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .intro-section,
+    .info-section,
+    .contact-section {
+        grid-template-columns: 1fr;
+    }
+
+    .gallery-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .gallery-grid img:nth-child(1),
+    .gallery-grid img:nth-child(4) {
+        grid-column: span 1;
+        aspect-ratio: 1 / 1;
+    }
+}
+
+@media (max-width: 680px) {
+    .site-header,
+    .tour-hero,
+    .quick-strip,
+    .site-section {
+        width: min(100% - 18px, 100%);
+    }
+
+    .site-header {
+        top: 8px;
+        grid-template-columns: 1fr;
+        border-radius: 20px;
+    }
+
+    .brand-mark strong {
+        font-size: 1rem;
+    }
+
+    .site-nav {
+        justify-content: stretch;
+        gap: 6px;
+    }
+
+    .site-nav a {
+        flex: 1 1 calc(50% - 6px);
+        text-align: center;
+        padding-inline: 8px;
+    }
+
+    .site-header > .site-button {
+        width: 100%;
+    }
+
+    .tour-hero {
+        min-height: 620px;
+        border-radius: 24px;
+        background:
+            linear-gradient(180deg, rgba(8, 58, 102, 0.46), rgba(8, 58, 102, 0.88) 62%, rgba(8, 58, 102, 0.94)),
+            url("Fotos%20sobre%20m%C3%AD/photo_2026-06-01_16-43-19.jpg") center top / cover;
+    }
+
+    .tour-hero__content {
+        padding: 24px 20px 30px;
+    }
+
+    .tour-hero h1 {
+        max-width: 7.4ch;
+        font-size: clamp(2.65rem, 13vw, 3.35rem);
+    }
+
+    .tour-hero__actions,
+    .contact-links {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .quick-strip,
+    .tour-grid,
+    .gallery-grid,
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-strip {
+        margin-top: -14px;
+    }
+
+    .site-section {
+        padding-top: 54px;
+        scroll-margin-top: 248px;
+    }
+
+    .section-copy h2,
+    .section-heading--centered h2 {
+        font-size: clamp(2.05rem, 12vw, 3.1rem);
+    }
+
+    .tour-card,
+    .booking-form,
+    .portrait-frame,
+    .faq-list details {
+        border-radius: 20px;
+    }
+
+    .tour-card__body {
+        padding: 16px;
     }
 }

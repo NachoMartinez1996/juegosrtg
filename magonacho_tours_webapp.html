@@ -1,0 +1,569 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --brand: #1a1a2e;
+    --brand-mid: #16213e;
+    --accent: #c9a96e;
+    --accent-light: #e8d5b0;
+    --surface: #f8f6f1;
+    --surface2: #ede9e1;
+    --text: #1a1a2e;
+    --text-muted: #6b6b7a;
+    --white: #ffffff;
+    --radius: 4px;
+    --radius-lg: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body, .app {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--brand);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 60px;
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; font-weight: 600; letter-spacing: 0.02em;
+    color: var(--accent);
+  }
+  .nav-logo span { color: var(--white); font-weight: 400; font-style: italic; }
+  .nav-links { display: flex; gap: 2rem; }
+  .nav-links a {
+    color: rgba(255,255,255,0.7); text-decoration: none;
+    font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase;
+    transition: color 0.2s; cursor: pointer;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-cta {
+    background: var(--accent); color: var(--brand);
+    border: none; padding: 0.45rem 1.2rem; border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500;
+    letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* PAGES */
+  .page { display: none; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* HERO */
+  .hero {
+    background: var(--brand-mid);
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '✦';
+    position: absolute; top: 1.5rem; left: 50%; transform: translateX(-50%);
+    color: var(--accent); font-size: 1.2rem; opacity: 0.6;
+  }
+  .hero-eyebrow {
+    font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.8rem, 6vw, 4.5rem); font-weight: 500; line-height: 1.1;
+    color: var(--white); margin-bottom: 0.5rem;
+  }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero-sub {
+    color: rgba(255,255,255,0.6); font-size: 1rem; font-weight: 300;
+    max-width: 480px; margin: 1.2rem auto 2.5rem; line-height: 1.7;
+  }
+  .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent); color: var(--brand);
+    border: none; padding: 0.75rem 2rem; border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-outline {
+    background: transparent; color: var(--white);
+    border: 1px solid rgba(255,255,255,0.3); padding: 0.75rem 2rem;
+    border-radius: var(--radius); font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem; font-weight: 400; letter-spacing: 0.08em;
+    text-transform: uppercase; cursor: pointer; transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* STATS BAR */
+  .stats-bar {
+    background: var(--brand); padding: 1.5rem 2rem;
+    display: flex; justify-content: center; gap: 4rem; flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; font-weight: 600; color: var(--accent); line-height: 1;
+  }
+  .stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.5); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.2rem; }
+
+  /* SECTION */
+  .section { padding: 4rem 2rem; max-width: 960px; margin: 0 auto; }
+  .section-header { text-align: center; margin-bottom: 3rem; }
+  .section-eyebrow { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.6rem; }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: 2.4rem; font-weight: 500; color: var(--text); line-height: 1.2; }
+
+  /* TOURS GRID */
+  .tours-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+  .tour-card {
+    background: var(--white); border-radius: var(--radius-lg);
+    border: 1px solid var(--surface2); overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;
+  }
+  .tour-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(26,26,46,0.12); }
+  .tour-thumb {
+    height: 160px; display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; position: relative;
+  }
+  .tour-thumb.t1 { background: linear-gradient(135deg, #1a1a2e 0%, #2d2d5e 100%); }
+  .tour-thumb.t2 { background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); }
+  .tour-thumb.t3 { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%); }
+  .tour-badge {
+    position: absolute; top: 0.75rem; right: 0.75rem;
+    background: var(--accent); color: var(--brand);
+    font-size: 0.68rem; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; padding: 0.25rem 0.6rem; border-radius: 2px;
+  }
+  .tour-body { padding: 1.25rem; }
+  .tour-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem;
+  }
+  .tour-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; }
+  .tour-meta { display: flex; justify-content: space-between; align-items: center; }
+  .tour-detail { font-size: 0.78rem; color: var(--text-muted); }
+  .tour-detail strong { color: var(--text); font-weight: 500; }
+  .btn-tour {
+    background: var(--brand); color: var(--white);
+    border: none; padding: 0.45rem 1rem; border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 500;
+    letter-spacing: 0.05em; cursor: pointer; transition: background 0.2s;
+  }
+  .btn-tour:hover { background: var(--accent); color: var(--brand); }
+
+  /* RESERVATION FORM */
+  .form-card {
+    background: var(--white); border-radius: var(--radius-lg);
+    border: 1px solid var(--surface2); padding: 2.5rem; max-width: 620px; margin: 0 auto;
+  }
+  .form-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem; font-weight: 500; margin-bottom: 0.4rem;
+  }
+  .form-subtitle { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 2rem; }
+  .form-group { margin-bottom: 1.25rem; }
+  .form-label { display: block; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; padding: 0.7rem 1rem;
+    border: 1px solid var(--surface2); border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--text);
+    background: var(--surface); transition: border-color 0.2s, background 0.2s;
+    outline: none;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--accent); background: var(--white);
+  }
+  .form-textarea { resize: vertical; min-height: 100px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-submit {
+    width: 100%; background: var(--brand); color: var(--white);
+    border: none; padding: 0.9rem; border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+    transition: background 0.2s; margin-top: 0.5rem;
+  }
+  .form-submit:hover { background: var(--accent); color: var(--brand); }
+  .success-msg {
+    display: none; background: #f0faf4; border: 1px solid #a8d5b5;
+    border-radius: var(--radius-lg); padding: 1.5rem; text-align: center; margin-top: 1rem;
+  }
+  .success-msg.show { display: block; }
+  .success-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .success-msg p { font-size: 0.9rem; color: #2d6a4f; }
+
+  /* GALLERY */
+  .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+  .gallery-item {
+    border-radius: var(--radius); overflow: hidden; aspect-ratio: 4/3;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem; cursor: pointer; transition: transform 0.2s;
+    position: relative;
+  }
+  .gallery-item:hover { transform: scale(1.03); }
+  .gallery-item:hover .gallery-overlay { opacity: 1; }
+  .gi1 { background: linear-gradient(135deg, #1a1a2e, #2d2d5e); }
+  .gi2 { background: linear-gradient(135deg, #0f2027, #2c5364); }
+  .gi3 { background: linear-gradient(135deg, #1a1a2e, #0f3460); }
+  .gi4 { background: linear-gradient(135deg, #16213e, #1a1a2e); }
+  .gi5 { background: linear-gradient(135deg, #0d1b2a, #1b263b); }
+  .gi6 { background: linear-gradient(135deg, #1a1a2e, #2d3561); }
+  .gallery-overlay {
+    position: absolute; inset: 0;
+    background: rgba(201,169,110,0.15);
+    opacity: 0; transition: opacity 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .gallery-caption {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(26,26,46,0.85); color: rgba(255,255,255,0.85);
+    font-size: 0.75rem; padding: 0.5rem 0.75rem; letter-spacing: 0.04em;
+  }
+
+  /* CONTACT */
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+  .contact-info h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem; font-weight: 500; margin-bottom: 1rem;
+  }
+  .contact-info p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 1.5rem; }
+  .contact-item { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .contact-icon {
+    width: 36px; height: 36px; background: var(--brand);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0;
+  }
+  .contact-text { font-size: 0.88rem; color: var(--text-muted); }
+  .contact-text strong { color: var(--text); display: block; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.1rem; }
+
+  /* FOOTER */
+  .footer {
+    background: var(--brand); color: rgba(255,255,255,0.5);
+    text-align: center; padding: 2rem;
+    font-size: 0.8rem; letter-spacing: 0.05em;
+    margin-top: 2rem;
+  }
+  .footer span { color: var(--accent); }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+    .form-row { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-bar { gap: 2rem; }
+  }
+</style>
+
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Magonacho Tours — webapp de recorridos guiados por Ignacio</h2>
+
+<div class="app">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-logo">✦ <span>mago</span>nacho<span> tours</span></div>
+    <div class="nav-links">
+      <a onclick="showPage('recorridos')">Recorridos</a>
+      <a onclick="showPage('galeria')">Galería</a>
+      <a onclick="showPage('contacto')">Contacto</a>
+    </div>
+    <button class="nav-cta" onclick="showPage('reserva')">Anotarme</button>
+  </nav>
+
+  <!-- PAGE: INICIO -->
+  <div class="page active" id="page-inicio">
+    <div class="hero">
+      <p class="hero-eyebrow">Rosario · Santa Fe · Litoral argentino</p>
+      <h1>El viaje que<br><em>no olvidarás</em></h1>
+      <p class="hero-sub">Recorridos guiados donde la historia, el territorio y un toque de magia se encuentran. Con Ignacio — guía profesional y mago.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="showPage('recorridos')">Ver recorridos</button>
+        <button class="btn-outline" onclick="showPage('reserva')">Anotarme ahora</button>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat"><div class="stat-num">+200</div><div class="stat-label">Turistas guiados</div></div>
+      <div class="stat"><div class="stat-num">8</div><div class="stat-label">Recorridos activos</div></div>
+      <div class="stat"><div class="stat-num">3</div><div class="stat-label">Provincias cubiertas</div></div>
+      <div class="stat"><div class="stat-num">★ 4.9</div><div class="stat-label">Valoración media</div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <p class="section-eyebrow">Próximos recorridos</p>
+        <h2 class="section-title">Elegí tu experiencia</h2>
+      </div>
+      <div class="tours-grid">
+        <div class="tour-card" onclick="showPage('recorridos')">
+          <div class="tour-thumb t1"><span>🗺️</span><span class="tour-badge">Disponible</span></div>
+          <div class="tour-body">
+            <div class="tour-name">Rosario histórica</div>
+            <div class="tour-desc">Centro, monumento, costanera y los rincones que no aparecen en las guías.</div>
+            <div class="tour-meta">
+              <div class="tour-detail"><strong>3 hs</strong> · Grupo reducido</div>
+              <button class="btn-tour" onclick="event.stopPropagation(); showPage('reserva')">Anotarme</button>
+            </div>
+          </div>
+        </div>
+        <div class="tour-card" onclick="showPage('recorridos')">
+          <div class="tour-thumb t2"><span>⛵</span><span class="tour-badge">Disponible</span></div>
+          <div class="tour-body">
+            <div class="tour-name">Islas del Paraná</div>
+            <div class="tour-desc">El delta más sorprendente del litoral, con historia, fauna y un poco de magia.</div>
+            <div class="tour-meta">
+              <div class="tour-detail"><strong>Jornada completa</strong> · Cupos limitados</div>
+              <button class="btn-tour" onclick="event.stopPropagation(); showPage('reserva')">Anotarme</button>
+            </div>
+          </div>
+        </div>
+        <div class="tour-card" onclick="showPage('recorridos')">
+          <div class="tour-thumb t3"><span>🏛️</span><span class="tour-badge">Nuevo</span></div>
+          <div class="tour-body">
+            <div class="tour-name">Santa Fe colonial</div>
+            <div class="tour-desc">Desde la fundación hasta hoy: un viaje en el tiempo por la primera capital.</div>
+            <div class="tour-meta">
+              <div class="tour-detail"><strong>4 hs</strong> · Con traslado</div>
+              <button class="btn-tour" onclick="event.stopPropagation(); showPage('reserva')">Anotarme</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: RECORRIDOS -->
+  <div class="page" id="page-recorridos">
+    <div class="section">
+      <div class="section-header">
+        <p class="section-eyebrow">Catálogo completo</p>
+        <h2 class="section-title">Todos los recorridos</h2>
+      </div>
+      <div class="tours-grid">
+        <div class="tour-card">
+          <div class="tour-thumb t1"><span>🗺️</span><span class="tour-badge">Disponible</span></div>
+          <div class="tour-body">
+            <div class="tour-name">Rosario histórica</div>
+            <div class="tour-desc">Centro, monumento, costanera y los rincones que no aparecen en las guías.</div>
+            <div class="tour-meta"><div class="tour-detail"><strong>3 hs</strong> · Grupo reducido</div><button class="btn-tour" onclick="showPage('reserva')">Anotarme</button></div>
+          </div>
+        </div>
+        <div class="tour-card">
+          <div class="tour-thumb t2"><span>⛵</span><span class="tour-badge">Disponible</span></div>
+          <div class="tour-body">
+            <div class="tour-name">Islas del Paraná</div>
+            <div class="tour-desc">El delta más sorprendente del litoral, con historia, fauna y un toque de magia.</div>
+            <div class="tour-meta"><div class="tour-detail"><strong>Jornada</strong> · Cupos limitados</div><button class="btn-tour" onclick="showPage('reserva')">Anotarme</button></div>
+          </div>
+        </div>
+        <div class="tour-card">
+          <div class="tour-thumb t3"><span>🏛️</span><span class="tour-badge">Nuevo</span></div>
+          <div class="tour-body">
+            <div class="tour-name">Santa Fe colonial</div>
+            <div class="tour-desc">Desde la fundación hasta hoy: un viaje en el tiempo por la primera capital.</div>
+            <div class="tour-meta"><div class="tour-detail"><strong>4 hs</strong> · Con traslado</div><button class="btn-tour" onclick="showPage('reserva')">Anotarme</button></div>
+          </div>
+        </div>
+        <div class="tour-card">
+          <div class="tour-thumb t1"><span>🎩</span><span class="tour-badge">Premium</span></div>
+          <div class="tour-body">
+            <div class="tour-name">Tour con magia</div>
+            <div class="tour-desc">Un recorrido histórico con actuaciones de magia en los puntos clave. Único.</div>
+            <div class="tour-meta"><div class="tour-detail"><strong>2.5 hs</strong> · Exclusivo</div><button class="btn-tour" onclick="showPage('reserva')">Anotarme</button></div>
+          </div>
+        </div>
+        <div class="tour-card">
+          <div class="tour-thumb t2"><span>🌅</span><span class="tour-badge">Disponible</span></div>
+          <div class="tour-body">
+            <div class="tour-name">Atardecer en la costanera</div>
+            <div class="tour-desc">El Paraná al caer el sol, con historia, anécdotas y el mejor panorama de la ciudad.</div>
+            <div class="tour-meta"><div class="tour-detail"><strong>2 hs</strong> · Tarde</div><button class="btn-tour" onclick="showPage('reserva')">Anotarme</button></div>
+          </div>
+        </div>
+        <div class="tour-card">
+          <div class="tour-thumb t3"><span>🏘️</span><span class="tour-badge">Disponible</span></div>
+          <div class="tour-body">
+            <div class="tour-name">Barrios con historia</div>
+            <div class="tour-desc">El Abasto, Pichincha, Echesortu: la ciudad real, la que vive y respira cultura.</div>
+            <div class="tour-meta"><div class="tour-detail"><strong>3 hs</strong> · A pie</div><button class="btn-tour" onclick="showPage('reserva')">Anotarme</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: RESERVA -->
+  <div class="page" id="page-reserva">
+    <div class="section">
+      <div class="section-header">
+        <p class="section-eyebrow">Reserva tu lugar</p>
+        <h2 class="section-title">Anotate en un recorrido</h2>
+      </div>
+      <div class="form-card">
+        <div class="form-title">¿Cuándo nos vemos?</div>
+        <div class="form-subtitle">Completá el formulario y me comunico con vos para confirmar el lugar.</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-input" placeholder="Tu nombre" id="inp-nombre">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Apellido</label>
+            <input type="text" class="form-input" placeholder="Tu apellido" id="inp-apellido">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" placeholder="tu@email.com" id="inp-email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">WhatsApp / Teléfono</label>
+          <input type="text" class="form-input" placeholder="+54 341 ..." id="inp-tel">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Recorrido</label>
+            <select class="form-select" id="inp-tour">
+              <option value="">Elegí un tour</option>
+              <option>Rosario histórica</option>
+              <option>Islas del Paraná</option>
+              <option>Santa Fe colonial</option>
+              <option>Tour con magia</option>
+              <option>Atardecer en la costanera</option>
+              <option>Barrios con historia</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fecha preferida</label>
+            <input type="date" class="form-input" id="inp-fecha">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Personas</label>
+          <select class="form-select" id="inp-personas">
+            <option>1 persona</option>
+            <option>2 personas</option>
+            <option>3–5 personas</option>
+            <option>6–10 personas</option>
+            <option>Más de 10</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mensaje (opcional)</label>
+          <textarea class="form-textarea" placeholder="¿Tenés alguna consulta o necesidad especial?" id="inp-mensaje"></textarea>
+        </div>
+        <button class="form-submit" onclick="submitForm()">Enviar solicitud →</button>
+
+        <div class="success-msg" id="success-msg">
+          <div class="success-icon">✦</div>
+          <p><strong>¡Solicitud recibida!</strong><br>Te contacto en las próximas horas para confirmar todo. ¡Nos vemos pronto!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: GALERIA -->
+  <div class="page" id="page-galeria">
+    <div class="section">
+      <div class="section-header">
+        <p class="section-eyebrow">Momentos capturados</p>
+        <h2 class="section-title">Galería de recorridos</h2>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item gi1"><span>📸</span><div class="gallery-overlay"></div><div class="gallery-caption">Rosario histórica</div></div>
+        <div class="gallery-item gi2"><span>🌅</span><div class="gallery-overlay"></div><div class="gallery-caption">Costanera al atardecer</div></div>
+        <div class="gallery-item gi3"><span>⛵</span><div class="gallery-overlay"></div><div class="gallery-caption">Islas del Paraná</div></div>
+        <div class="gallery-item gi4"><span>🎩</span><div class="gallery-overlay"></div><div class="gallery-caption">Tour con magia</div></div>
+        <div class="gallery-item gi5"><span>🏛️</span><div class="gallery-overlay"></div><div class="gallery-caption">Santa Fe colonial</div></div>
+        <div class="gallery-item gi6"><span>🏘️</span><div class="gallery-overlay"></div><div class="gallery-caption">Barrios con historia</div></div>
+      </div>
+      <p style="text-align:center; color:var(--text-muted); font-size:0.85rem; margin-top:2rem; font-style:italic;">Las fotos reales se cargan desde tu colección personal. Estos son los espacios reservados.</p>
+    </div>
+  </div>
+
+  <!-- PAGE: CONTACTO -->
+  <div class="page" id="page-contacto">
+    <div class="section">
+      <div class="section-header">
+        <p class="section-eyebrow">Hablemos</p>
+        <h2 class="section-title">Contacto directo</h2>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <h3>Siempre con gusto<br>en responder</h3>
+          <p>Para consultas sobre recorridos, grupos escolares, empresas, eventos especiales o simplemente para conocernos. Respondeo por WhatsApp o email.</p>
+          <div class="contact-item">
+            <div class="contact-icon" style="background:var(--brand)"><span style="font-size:0.9rem">📱</span></div>
+            <div class="contact-text"><strong>WhatsApp</strong>+54 341 · · · · · · · ·</div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon" style="background:var(--brand)"><span style="font-size:0.9rem">✉️</span></div>
+            <div class="contact-text"><strong>Email</strong>magonacho@tours.com</div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon" style="background:var(--brand)"><span style="font-size:0.9rem">📍</span></div>
+            <div class="contact-text"><strong>Base de operaciones</strong>Rosario, Santa Fe, Argentina</div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon" style="background:var(--brand)"><span style="font-size:0.9rem">📸</span></div>
+            <div class="contact-text"><strong>Instagram</strong>@magonacho</div>
+          </div>
+        </div>
+        <div class="form-card" style="padding:2rem;">
+          <div class="form-group">
+            <label class="form-label">Tu nombre</label>
+            <input type="text" class="form-input" placeholder="Nombre y apellido">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email o WhatsApp</label>
+            <input type="text" class="form-input" placeholder="Para que pueda responderte">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mensaje</label>
+            <textarea class="form-textarea" placeholder="¿En qué puedo ayudarte?"></textarea>
+          </div>
+          <button class="form-submit" onclick="submitContact()">Enviar mensaje →</button>
+          <div class="success-msg" id="contact-success">
+            <div class="success-icon">✦</div>
+            <p><strong>¡Mensaje enviado!</strong><br>Te respondo a la brevedad.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>✦ Magonacho Tours</span> · Rosario, Santa Fe · Todos los derechos reservados
+  </footer>
+
+</div>
+
+<script>
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById('page-' + id);
+    if (target) { target.classList.add('active'); target.scrollIntoView({behavior:'smooth', block:'start'}); }
+  }
+
+  function submitForm() {
+    const nombre = document.getElementById('inp-nombre').value;
+    const email = document.getElementById('inp-email').value;
+    const tour = document.getElementById('inp-tour').value;
+    if (!nombre || !email || !tour) { alert('Por favor completá nombre, email y recorrido.'); return; }
+    document.getElementById('success-msg').classList.add('show');
+    document.querySelector('#page-reserva .form-submit').style.display = 'none';
+  }
+
+  function submitContact() {
+    document.getElementById('contact-success').classList.add('show');
+    document.querySelector('#page-contacto .form-submit').style.display = 'none';
+  }
+</script>

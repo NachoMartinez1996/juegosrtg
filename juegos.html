@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="description"
+        content="Juegos de memoria y trivia sobre Rosario, creados para jugar desde la web o instalar como app."
+    >
+    <meta name="theme-color" content="#0b5ea8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="El Mago de los Tours | Juegos">
+    <meta name="application-name" content="El Mago de los Tours">
+    <meta name="msapplication-TileColor" content="#0b5ea8">
+    <meta name="msapplication-TileImage" content="android-chrome-192x192.png">
+    <title>El Mago de los Tours | Juegos de Rosario</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="android-chrome-512x512.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="app-shell">
+        <section class="hero">
+            <p class="eyebrow">Experiencia interactiva</p>
+            <h1>Juegos de Rosario</h1>
+            <p class="hero-copy">
+                Elegí entre el juego de memoria clásico y el desafío de tarjetas.
+                Esta webapp también puede instalarse y quedar disponible sin conexión.
+            </p>
+
+            <div class="hero-toolbar">
+                <div class="status-pills" aria-live="polite">
+                    <div id="offline-status" class="status-pill status-pill--pending">
+                        <span class="status-pill__icon" aria-hidden="true"></span>
+                        <span id="offline-status-label">Comprobando modo offline...</span>
+                    </div>
+                    <div id="update-status" class="status-pill status-pill--neutral is-hidden">
+                        <span class="status-pill__icon" aria-hidden="true"></span>
+                        <span id="update-status-label">Nueva versión disponible</span>
+                    </div>
+                </div>
+
+                <div class="hero-actions">
+                    <a class="ghost-button link-button" href="index.html">Volver a tours</a>
+                    <button id="clear-cache-btn" class="ghost-button" type="button">
+                        Limpiar caché
+                    </button>
+                </div>
+            </div>
+
+            <p id="cache-feedback" class="hero-actions__hint" aria-live="polite">
+                El indicador offline te avisa cuando esta página ya quedó guardada en el dispositivo.
+            </p>
+        </section>
+
+        <div id="update-banner" class="notice notice--warning is-hidden" aria-live="polite">
+            <div class="update-banner__body">
+                <strong id="update-banner-title">Nueva versión disponible.</strong>
+                <p id="update-banner-text">
+                    Ya hay una actualización lista para aplicar en esta webapp.
+                </p>
+            </div>
+            <div class="update-banner__actions">
+                <button id="update-app-btn" class="secondary-button" type="button">
+                    Actualizar ahora
+                </button>
+            </div>
+        </div>
+
+        <section id="home-view" class="view view--active" aria-labelledby="home-title">
+            <div class="section-heading">
+                <div>
+                    <h2 id="home-title">Seleccioná tu juego</h2>
+                </div>
+            </div>
+
+            <div class="mode-grid">
+                <article class="mode-card">
+                    <p class="mode-card__tag">Módulo 1</p>
+                    <h3>Juego de Memoria</h3>
+                    <p>
+                        Encontrá las 12 parejas entre imágenes y referencias.
+                    </p>
+                    <button class="primary-button" type="button" data-open-view="memory-view">
+                        Jugar memoria
+                    </button>
+                </article>
+
+                <article class="mode-card mode-card--accent">
+                    <p class="mode-card__tag">Módulo 2</p>
+                    <h3>Desafío Rosario Te Guío</h3>
+                    <p>
+                        Descubrí las 3 palabras en orden o dispará trivias con preguntas sobre la historia
+                        de Rosario. 9 tarjetas: 3 palabras + 6 trivias.
+                    </p>
+                    <button class="primary-button" type="button" data-open-view="challenge-view">
+                        Jugar desafío
+                    </button>
+                </article>
+            </div>
+        </section>
+
+        <section id="memory-view" class="view" aria-labelledby="memory-title">
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">Módulo 1</p>
+                    <h2 id="memory-title">Juego de Memoria</h2>
+                </div>
+                <button class="ghost-button" type="button" data-open-view="home-view">
+                    Volver al inicio
+                </button>
+            </div>
+
+            <div class="panel panel--status">
+                <div class="status-chip">
+                    <span>Tiempo restante</span>
+                    <strong id="memory-time">120 s</strong>
+                </div>
+                <div class="status-chip">
+                    <span>Pares encontrados</span>
+                    <strong id="memory-progress">0 / 12</strong>
+                </div>
+                <div class="action-row">
+                    <button id="memory-start-btn" class="primary-button" type="button">Iniciar juego</button>
+                    <button id="memory-reset-btn" class="secondary-button" type="button">Reiniciar</button>
+                </div>
+            </div>
+
+            <div id="memory-feedback" class="notice notice--neutral" aria-live="polite">
+                Emparejá cada imagen con su referencia antes de que termine el tiempo.
+            </div>
+
+            <div id="memory-board" class="board board--memory" aria-live="polite"></div>
+        </section>
+
+        <section id="challenge-view" class="view" aria-labelledby="challenge-title">
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">Módulo 2</p>
+                    <h2 id="challenge-title">Desafío Rosario Te Guío</h2>
+                </div>
+                <button class="ghost-button" type="button" data-open-view="home-view">
+                    Volver al inicio
+                </button>
+            </div>
+
+            <div class="panel panel--status">
+                <div class="status-chip">
+                    <span>Tablero</span>
+                    <strong>3 x 3 tarjetas</strong>
+                </div>
+                <div class="status-chip">
+                    <span>Palabras encontradas</span>
+                    <strong id="challenge-word-count">0 / 3</strong>
+                </div>
+                <div class="action-row">
+                    <button id="challenge-reset-btn" class="secondary-button" type="button">Reiniciar</button>
+                </div>
+            </div>
+
+            <div id="challenge-feedback" class="notice notice--neutral" aria-live="polite">
+                Hacé clic en las tarjetas para descubrir palabras o trivias.
+            </div>
+
+            <div id="challenge-board" class="board board--challenge" aria-live="polite"></div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

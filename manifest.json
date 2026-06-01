@@ -1,15 +1,16 @@
 {
-    "id": "./",
+    "id": "./juegos.html",
     "lang": "es-AR",
     "dir": "ltr",
-    "name": "Rosario Te Guío | Juegos",
-    "short_name": "Rosario Te Guío",
+    "name": "El Mago de los Tours | Juegos de Rosario",
+    "short_name": "Juegos Rosario",
     "description": "Juego de memoria y desafío de trivias sobre Rosario para jugar online u offline.",
     "categories": [
         "games",
-        "education"
+        "education",
+        "travel"
     ],
-    "start_url": "./",
+    "start_url": "./juegos.html",
     "scope": "./",
     "display": "standalone",
     "background_color": "#fbf4de",

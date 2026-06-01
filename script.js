@@ -1,13 +1,14 @@
 ﻿// Data - Logo Sources
-const logoSources = ["logo.png", "Logo.png"];
+const logoSources = ["Logos/LogoGemini.png", "Logo.png"];
 const APP_SHELL_CACHE_PREFIX = "rosario-shell-";
-const UPDATE_APPLIED_FLAG = "rosario-te-guio-updated";
+const UPDATE_APPLIED_FLAG = "el-mago-tours-games-updated";
 const OFFLINE_REQUIRED_FILES = [
-    "./index.html",
+    "./juegos.html",
     "./style.css",
     "./script.js",
     "./manifest.json",
-    "./android-chrome-192x192.png"
+    "./android-chrome-192x192.png",
+    "./Logos/LogoGemini.png"
 ];
 
 let serviceWorkerRegistration = null;
@@ -694,11 +695,11 @@ function createGameCard(frontContentFn) {
 
     const logo = document.createElement("img");
     logo.className = "game-card__back-logo";
-    logo.alt = "Rosario Te Guío";
+    logo.alt = "El Mago de los Tours";
 
     const fallback = document.createElement("span");
     fallback.className = "game-card__back-fallback";
-    fallback.textContent = "Rosario Te Guío";
+    fallback.textContent = "El Mago de los Tours";
     fallback.hidden = true;
 
     let logoIndex = 0;
