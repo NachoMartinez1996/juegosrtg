@@ -12,7 +12,14 @@ service cloud.firestore {
 
     match /agenda/{docId} {
       allow read: if resource.data.published == true || isAdmin();
-      allow create, update, delete: if isAdmin();
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (
+        signedIn()
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly(["booked", "spots", "updatedAt"])
+        && request.resource.data.booked is int
+        && request.resource.data.booked > resource.data.booked
+        && (!resource.data.keys().hasAny(["capacity"]) || resource.data.capacity == 0 || request.resource.data.booked <= resource.data.capacity)
+      );
     }
 
     match /siteConfig/{docId} {

@@ -131,6 +131,7 @@ async function handleBookingSubmit(event) {
         email: getValue("booking-email"),
         phone: getValue("booking-phone"),
         tour: getValue("booking-tour"),
+        agendaId: getValue("booking-agenda-id"),
         date: getValue("booking-date") || "A coordinar",
         people: getValue("booking-people"),
         duration: getValue("booking-duration"),
@@ -150,6 +151,10 @@ async function handleBookingSubmit(event) {
                 status: "pending",
                 createdAt: state.firestore.serverTimestamp()
             });
+
+            if (payload.agendaId && state.user) {
+                await reserveAgendaSpots(payload.agendaId, peopleCount(payload.people));
+            }
         } catch (error) {
             console.warn("No se pudo guardar la inscripción en Firebase.", error);
         }
@@ -163,6 +168,7 @@ async function handleBookingSubmit(event) {
         `Duración / precio: ${payload.duration}.`,
         `Email: ${payload.email}.`,
         `WhatsApp: ${payload.phone}.`,
+        payload.agendaId ? "Salida seleccionada desde agenda Firebase." : "",
         payload.message ? `Mensaje: ${payload.message}` : "",
         "Entiendo que las salidas son en espacios públicos y no son privadas."
     ].filter(Boolean);
@@ -363,9 +369,14 @@ function renderAgenda(items) {
             <span>${escapeHtml(formatAgendaDate(item.date))} · ${escapeHtml(item.time || "Horario a confirmar")}</span>
             <span>${escapeHtml(item.duration || "Duración a completar")} · ${escapeHtml(item.price || "Precio según duración")}</span>
             <span>${escapeHtml(item.meeting || "Punto de encuentro a confirmar")}</span>
-            <em>${escapeHtml(item.capacity || item.spots || "Cupos a confirmar")}</em>
+            <em>${escapeHtml(item.spots || capacityLabel(item) || "Cupos a confirmar")}</em>
+            ${item.id ? `<button class="site-button site-button--small" type="button" data-select-agenda="${escapeHtml(item.id)}" data-agenda-tour="${escapeHtml(item.tour || "")}" data-agenda-date="${escapeHtml(item.date || "")}" data-agenda-time="${escapeHtml(item.time || "")}" data-agenda-duration="${escapeHtml(item.duration || "")}" data-agenda-price="${escapeHtml(item.price || "")}">Elegir esta salida</button>` : ""}
         </article>
     `).join("");
+
+    list.querySelectorAll("[data-select-agenda]").forEach(button => {
+        button.addEventListener("click", () => selectAgendaItem(button));
+    });
 }
 
 function renderReviews(items) {
@@ -384,6 +395,75 @@ function renderReviews(items) {
 function openWhatsapp(message) {
     const url = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank", "noopener");
+}
+
+async function reserveAgendaSpots(agendaId, amount) {
+    const { doc, runTransaction, serverTimestamp } = state.firestore;
+    const agendaRef = doc(state.db, "agenda", agendaId);
+
+    await runTransaction(state.db, async transaction => {
+        const snap = await transaction.get(agendaRef);
+        if (!snap.exists()) return;
+
+        const data = snap.data();
+        const capacity = Number(data.capacity || 0);
+        const booked = Number(data.booked || 0);
+        const nextBooked = booked + amount;
+
+        if (capacity && nextBooked > capacity) {
+            throw new Error("capacity-exceeded");
+        }
+
+        transaction.update(agendaRef, {
+            booked: nextBooked,
+            spots: capacity ? `${Math.max(capacity - nextBooked, 0)} lugares disponibles` : "Cupos a confirmar",
+            updatedAt: serverTimestamp()
+        });
+    });
+}
+
+function selectAgendaItem(button) {
+    const agendaId = button.dataset.selectAgenda || "";
+    const tour = button.dataset.agendaTour || "";
+    const date = button.dataset.agendaDate || "";
+    const time = button.dataset.agendaTime || "";
+    const duration = button.dataset.agendaDuration || "";
+    const price = button.dataset.agendaPrice || "";
+
+    const agendaInput = document.getElementById("booking-agenda-id");
+    const tourInput = document.getElementById("booking-tour");
+    const dateInput = document.getElementById("booking-date");
+    const durationInput = document.getElementById("booking-duration");
+
+    if (agendaInput) agendaInput.value = agendaId;
+    if (tourInput && tour) tourInput.value = tour;
+    if (dateInput && date) dateInput.value = date;
+    if (durationInput && (duration || price)) {
+        const value = `${duration || "Duración"} - ${price || "precio a confirmar"}`;
+        if (![...durationInput.options].some(option => option.value === value)) {
+            durationInput.add(new Option(value, value));
+        }
+        durationInput.value = value;
+    }
+
+    setText(
+        "selected-agenda-feedback",
+        `Salida seleccionada: ${tour || "recorrido"} ${date ? `· ${date}` : ""} ${time ? `· ${time}` : ""}.`
+    );
+
+    document.getElementById("booking-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function peopleCount(label) {
+    const firstNumber = Number(String(label || "1").match(/\d+/)?.[0] || 1);
+    return Math.max(firstNumber, 1);
+}
+
+function capacityLabel(item) {
+    const capacity = Number(item.capacity || 0);
+    if (!capacity) return "";
+    const booked = Number(item.booked || 0);
+    return `${Math.max(capacity - booked, 0)} lugares disponibles`;
 }
 
 function getValue(id) {
