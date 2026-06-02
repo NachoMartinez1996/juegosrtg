@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b5ea8">
+    <title>Panel de Ignacio | El Mago de los Tours</title>
+    <link rel="icon" href="Favicon/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="Favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="Favicon/apple-icon-180x180.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="tour-site admin-site">
+    <header class="site-header">
+        <a class="brand-mark" href="index.html" aria-label="Volver a El Mago de los Tours">
+            <img src="Logos/LogoGemini.png" alt="">
+            <span>
+                <strong>Panel de Ignacio</strong>
+                <small>Agenda y comunidad</small>
+            </span>
+        </a>
+        <nav class="site-nav" aria-label="Navegación del panel">
+            <a href="index.html">Sitio público</a>
+            <a href="juegos.html">Juegos</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="site-section split-section" id="admin-login">
+            <div class="section-copy">
+                <p class="site-eyebrow">Acceso privado</p>
+                <h1>Modificar agenda</h1>
+                <p>
+                    Ingresá con el usuario autorizado para publicar horarios, cupos,
+                    datos de seña, reseñas y solicitudes de recorridos.
+                </p>
+            </div>
+            <form class="booking-form" id="admin-login-form">
+                <label>
+                    Email
+                    <input id="admin-email" type="email" autocomplete="email" required>
+                </label>
+                <label>
+                    Contraseña
+                    <input id="admin-password" type="password" autocomplete="current-password" required>
+                </label>
+                <button class="site-button" type="submit">Ingresar</button>
+                <p class="form-feedback" id="admin-login-feedback" aria-live="polite"></p>
+            </form>
+        </section>
+
+        <section class="site-section admin-panel" id="admin-panel" hidden>
+            <div class="section-heading section-heading--centered">
+                <p class="site-eyebrow">Solo Ignacio</p>
+                <h1>Panel de actualización</h1>
+                <button class="site-button site-button--small site-button--light" id="admin-logout" type="button">Cerrar sesión</button>
+            </div>
+
+            <div class="admin-grid">
+                <form class="booking-form" id="agenda-form">
+                    <p class="site-eyebrow">Agenda</p>
+                    <h3>Nueva salida</h3>
+                    <input type="hidden" id="agenda-id">
+                    <label>
+                        Recorrido
+                        <input id="agenda-tour" type="text" required placeholder="Nombre del recorrido">
+                    </label>
+                    <div class="form-row">
+                        <label>
+                            Fecha
+                            <input id="agenda-date" type="date">
+                        </label>
+                        <label>
+                            Hora
+                            <input id="agenda-time" type="time">
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <label>
+                            Duración
+                            <input id="agenda-duration" type="text" placeholder="Ej: 2 horas">
+                        </label>
+                        <label>
+                            Precio
+                            <input id="agenda-price" type="text" placeholder="Ej: $15.000 ARS">
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <label>
+                            Cupos
+                            <input id="agenda-capacity" type="number" min="0" placeholder="Ej: 20">
+                        </label>
+                        <label>
+                            Inscriptos
+                            <input id="agenda-booked" type="number" min="0" value="0">
+                        </label>
+                    </div>
+                    <label>
+                        Punto de encuentro
+                        <input id="agenda-meeting" type="text" placeholder="Dirección o esquina">
+                    </label>
+                    <label class="checkbox-label">
+                        <input id="agenda-published" type="checkbox" checked>
+                        Publicar en el sitio
+                    </label>
+                    <button class="site-button" type="submit">Guardar salida</button>
+                    <p class="form-feedback" id="agenda-feedback" aria-live="polite"></p>
+                </form>
+
+                <form class="booking-form" id="csv-form">
+                    <p class="site-eyebrow">Excel / CSV</p>
+                    <h3>Cargar agenda por tabla</h3>
+                    <p class="admin-hint">Pegá filas exportadas de Excel en este orden: fecha,hora,recorrido,duración,precio,cupos,punto,publicado.</p>
+                    <textarea id="csv-agenda" rows="8" placeholder="2026-06-15,16:00,Paseo del Siglo,2 horas,$15000,20,Córdoba y Corrientes,true"></textarea>
+                    <button class="site-button" type="submit">Importar filas</button>
+                    <p class="form-feedback" id="csv-feedback" aria-live="polite"></p>
+                </form>
+
+                <form class="booking-form" id="payment-form">
+                    <p class="site-eyebrow">Seña</p>
+                    <h3>Datos de pago</h3>
+                    <label>
+                        Texto visible
+                        <textarea id="payment-details-admin" rows="4" placeholder="Alias, CVU, Mercado Pago o instrucciones."></textarea>
+                    </label>
+                    <label>
+                        Link de pago
+                        <input id="payment-link-admin" type="url" placeholder="https://...">
+                    </label>
+                    <label>
+                        Texto del botón
+                        <input id="payment-label-admin" type="text" placeholder="Abonar seña">
+                    </label>
+                    <button class="site-button" type="submit">Guardar seña</button>
+                    <p class="form-feedback" id="payment-feedback" aria-live="polite"></p>
+                </form>
+            </div>
+
+            <section class="admin-section">
+                <h2>Salidas publicadas</h2>
+                <div class="admin-list" id="admin-agenda-list"></div>
+            </section>
+
+            <section class="admin-section">
+                <h2>Reseñas pendientes</h2>
+                <div class="admin-list" id="admin-reviews-list"></div>
+            </section>
+
+            <section class="admin-section">
+                <h2>Sugerencias de recorridos</h2>
+                <div class="admin-list" id="admin-suggestions-list"></div>
+            </section>
+
+            <section class="admin-section">
+                <h2>Inscripciones</h2>
+                <div class="admin-list" id="admin-registrations-list"></div>
+            </section>
+        </section>
+    </main>
+
+    <script type="module" src="admin.js"></script>
+</body>
+</html>

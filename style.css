@@ -1275,6 +1275,15 @@ body.tour-site {
         linear-gradient(180deg, #fff8e6 0%, #f8f0d8 45%, #fdfdf9 100%);
 }
 
+.page-view {
+    display: none;
+}
+
+.page-view.is-active {
+    display: block;
+    animation: fade-up 260ms ease;
+}
+
 .site-header {
     position: sticky;
     top: 12px;
@@ -1378,6 +1387,19 @@ body.tour-site {
     box-shadow: none;
 }
 
+.site-button--light {
+    color: var(--brand-blue);
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(11, 94, 168, 0.22);
+    box-shadow: none;
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
 .site-eyebrow {
     margin: 0;
     color: var(--brand-gold);
@@ -1473,6 +1495,48 @@ body.tour-site {
     background: rgba(255, 255, 255, 0.9);
     box-shadow: 0 18px 38px rgba(11, 52, 89, 0.14);
     backdrop-filter: blur(12px);
+}
+
+.price-panel,
+.deposit-card {
+    display: grid;
+    gap: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border-radius: 24px;
+    border: 1px solid rgba(20, 50, 74, 0.12);
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 16px 34px rgba(11, 52, 89, 0.1);
+}
+
+.price-panel h3,
+.deposit-card h3,
+.booking-form h3,
+.map-list h3 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--ink);
+}
+
+.price-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.price-grid span {
+    display: grid;
+    gap: 4px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: var(--bg-soft);
+    color: var(--ink-muted);
+    line-height: 1.35;
+}
+
+.price-grid strong {
+    color: var(--brand-blue);
 }
 
 .quick-strip div {
@@ -1630,6 +1694,14 @@ body.tour-site {
     margin-top: 2px;
 }
 
+.tour-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-top: 2px;
+}
+
 .gallery-grid {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -1650,6 +1722,68 @@ body.tour-site {
 .gallery-grid img:nth-child(4) {
     grid-column: span 2;
     aspect-ratio: 4 / 3;
+}
+
+.split-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 1fr);
+    gap: clamp(24px, 5vw, 54px);
+    align-items: start;
+}
+
+.stacked-panel {
+    display: grid;
+    gap: 18px;
+}
+
+.agenda-list,
+.reviews-list,
+.admin-list {
+    display: grid;
+    gap: 12px;
+}
+
+.agenda-card,
+.review-card,
+.admin-card {
+    display: grid;
+    gap: 8px;
+    padding: 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(20, 50, 74, 0.12);
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 12px 26px rgba(11, 52, 89, 0.08);
+}
+
+.agenda-card strong,
+.review-card strong,
+.admin-card strong {
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.18rem;
+    line-height: 1.15;
+}
+
+.agenda-card span,
+.review-card span,
+.admin-card span,
+.agenda-card em,
+.admin-card em {
+    color: var(--ink-muted);
+    line-height: 1.45;
+}
+
+.review-card p,
+.deposit-card p,
+.auth-card p,
+.admin-hint {
+    margin: 0;
+    color: var(--ink-muted);
+    line-height: 1.6;
+}
+
+.deposit-card {
+    margin-bottom: 0;
 }
 
 .info-section {
@@ -1705,6 +1839,27 @@ body.tour-site {
     border: 1px solid rgba(11, 94, 168, 0.14);
 }
 
+.map-list {
+    display: grid;
+    gap: 12px;
+    padding: clamp(18px, 3vw, 28px);
+    border-radius: 24px;
+    border: 1px solid rgba(20, 50, 74, 0.12);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: var(--shadow);
+}
+
+.map-list a {
+    color: var(--brand-blue);
+    text-decoration: none;
+    font-weight: 800;
+    line-height: 1.35;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: var(--bg-soft);
+    border: 1px solid rgba(11, 94, 168, 0.14);
+}
+
 .booking-form {
     display: grid;
     gap: 14px;
@@ -1724,6 +1879,20 @@ body.tour-site {
     font-size: 0.82rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+}
+
+.checkbox-label {
+    display: flex !important;
+    grid-template-columns: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.checkbox-label input {
+    width: auto;
 }
 
 .booking-form input,
@@ -1802,6 +1971,41 @@ body.tour-site {
     text-decoration: none;
 }
 
+.admin-site .site-section h1,
+.admin-panel h1 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(2.4rem, 6vw, 4.6rem);
+    color: var(--ink);
+    line-height: 1;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.admin-section {
+    margin-top: 34px;
+}
+
+.admin-section h2 {
+    margin: 0 0 14px;
+    font-family: Georgia, "Times New Roman", serif;
+    color: var(--ink);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.admin-card {
+    align-items: start;
+}
+
+.admin-card .site-button {
+    justify-self: start;
+    margin-right: 8px;
+}
+
 @media (max-width: 1020px) {
     .site-header {
         grid-template-columns: 1fr auto;
@@ -1822,8 +2026,14 @@ body.tour-site {
 
     .intro-section,
     .info-section,
-    .contact-section {
+    .contact-section,
+    .split-section,
+    .admin-grid {
         grid-template-columns: 1fr;
+    }
+
+    .price-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .gallery-grid {
@@ -1896,7 +2106,8 @@ body.tour-site {
     .quick-strip,
     .tour-grid,
     .gallery-grid,
-    .form-row {
+    .form-row,
+    .price-grid {
         grid-template-columns: 1fr;
     }
 
@@ -1923,5 +2134,17 @@ body.tour-site {
 
     .tour-card__body {
         padding: 16px;
+    }
+
+    .button-row,
+    .tour-card__actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .button-row > *,
+    .tour-card__actions > *,
+    .map-list a {
+        width: 100%;
     }
 }

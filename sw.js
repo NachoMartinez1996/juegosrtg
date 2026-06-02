@@ -1,4 +1,4 @@
-const VERSION_CACHE = "1.2.00";
+const VERSION_CACHE = "1.3.00";
 const CACHE_SHELL = `rosario-shell-${VERSION_CACHE}`;
 const CACHE_RUNTIME = `rosario-runtime-${VERSION_CACHE}`;
 const HOME_SHELL = "./index.html";
@@ -9,13 +9,18 @@ const shellFiles = [
     "./",
     "./index.html",
     "./juegos.html",
+    "./admin.html",
     "./style.css",
     "./script.js",
+    "./site.js",
+    "./admin.js",
+    "./firebase-config.js",
     "./manifest.json",
-    "./favicon.ico",
-    "./apple-touch-icon.png",
-    "./android-chrome-192x192.png",
-    "./android-chrome-512x512.png",
+    "./Favicon/favicon.ico",
+    "./Favicon/favicon-32x32.png",
+    "./Favicon/favicon-16x16.png",
+    "./Favicon/apple-icon-180x180.png",
+    "./Favicon/android-icon-192x192.png",
     "./Logo.png",
     "./Logos/LogoGemini.png",
     "./castagnino.jpg",
@@ -42,7 +47,11 @@ function isUpdatableResource(request) {
         request.destination === "document" ||
         path.endsWith("/index.html") ||
         path.endsWith("/juegos.html") ||
+        path.endsWith("/admin.html") ||
         path.endsWith("/script.js") ||
+        path.endsWith("/site.js") ||
+        path.endsWith("/admin.js") ||
+        path.endsWith("/firebase-config.js") ||
         path.endsWith("/style.css") ||
         path.endsWith("/manifest.json")
     );
@@ -58,7 +67,11 @@ function getTargetCache(request) {
         request.destination === "document" ||
         path.endsWith("/index.html") ||
         path.endsWith("/juegos.html") ||
+        path.endsWith("/admin.html") ||
         path.endsWith("/script.js") ||
+        path.endsWith("/site.js") ||
+        path.endsWith("/admin.js") ||
+        path.endsWith("/firebase-config.js") ||
         path.endsWith("/style.css") ||
         path.endsWith("/manifest.json")
     ) {
