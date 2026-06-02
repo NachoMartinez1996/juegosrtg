@@ -6,7 +6,9 @@ const state = {
     auth: null,
     db: null,
     authFns: null,
-    firestore: null
+    firestore: null,
+    unsubscribers: [],
+    subscribed: false
 };
 
 initAdmin();
@@ -34,12 +36,21 @@ async function initAdmin() {
 
             if (user && !isAdmin) {
                 setText("admin-login-feedback", "Este panel está habilitado solo para Ignacio.");
+                setText("admin-session-feedback", "");
+                cleanupSubscriptions();
                 authMod.signOut(state.auth);
             }
 
             if (isAdmin) {
-                subscribeAdminLists();
+                setText("admin-login-feedback", "Ingreso correcto.");
+                setText("admin-session-feedback", `Sesión iniciada como ${user.email}. Cargando datos...`);
+                if (!state.subscribed) subscribeAdminLists();
                 loadPaymentConfig();
+            }
+
+            if (!user) {
+                setText("admin-session-feedback", "");
+                cleanupSubscriptions();
             }
         });
     } catch (error) {
@@ -48,6 +59,8 @@ async function initAdmin() {
 }
 
 function bindAdminEvents() {
+    initPasswordToggles();
+
     const adminEmailInput = document.getElementById("admin-email");
     if (adminEmailInput && !adminEmailInput.value) {
         adminEmailInput.value = ADMIN_EMAIL;
@@ -62,6 +75,8 @@ function bindAdminEvents() {
             setText("admin-login-feedback", "Completá email y contraseña.");
             return;
         }
+
+        setText("admin-login-feedback", "Ingresando...");
 
         try {
             await state.authFns.signInWithEmailAndPassword(
@@ -94,6 +109,17 @@ function bindAdminEvents() {
     document.getElementById("payment-form")?.addEventListener("submit", handlePaymentSubmit);
 }
 
+function initPasswordToggles() {
+    document.querySelectorAll("[data-toggle-password]").forEach(toggle => {
+        const input = document.getElementById(toggle.dataset.togglePassword);
+        if (!input) return;
+
+        toggle.addEventListener("change", () => {
+            input.type = toggle.checked ? "text" : "password";
+        });
+    }, error => handleAdminSnapshotError("admin-registrations-list", "No se pudieron leer las inscripciones.", error));
+}
+
 async function handleAgendaSubmit(event) {
     event.preventDefault();
     const { addDoc, collection, doc, serverTimestamp, updateDoc } = state.firestore;
@@ -119,6 +145,8 @@ async function handleAgendaSubmit(event) {
         return;
     }
 
+    setText("agenda-feedback", "Guardando salida...");
+
     try {
         if (id) {
             await updateDoc(doc(state.db, "agenda", id), payload);
@@ -132,9 +160,10 @@ async function handleAgendaSubmit(event) {
         document.getElementById("agenda-id").value = "";
         document.getElementById("agenda-published").checked = true;
         document.getElementById("agenda-booked").value = "0";
-        setText("agenda-feedback", "Salida guardada.");
+        setText("agenda-feedback", payload.published ? "Salida guardada y publicada en la web." : "Salida guardada como oculta.");
     } catch (error) {
-        setText("agenda-feedback", "No se pudo guardar la salida.");
+        console.warn("No se pudo guardar la salida.", error);
+        setText("agenda-feedback", getFirestoreMessage(error, "No se pudo guardar la salida."));
     }
 }
 
@@ -150,37 +179,46 @@ async function handleCsvSubmit(event) {
         return;
     }
 
-    const { addDoc, collection, serverTimestamp } = state.firestore;
-    let count = 0;
+    setText("csv-feedback", "Importando filas...");
 
-    for (const row of rows) {
-        const [date, time, tour, duration, price, capacity, meeting, published] = row.split(",").map(cell => cell.trim());
-        if (!tour) continue;
-        const numericCapacity = Number(capacity || 0);
-        await addDoc(collection(state.db, "agenda"), {
-            date,
-            time,
-            tour,
-            duration,
-            price,
-            capacity: numericCapacity,
-            booked: 0,
-            spots: numericCapacity ? `${numericCapacity} lugares disponibles` : "Cupos a confirmar",
-            meeting,
-            published: published !== "false",
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-        });
-        count++;
+    try {
+        const { addDoc, collection, serverTimestamp } = state.firestore;
+        let count = 0;
+
+        for (const row of rows) {
+            const [date, time, tour, duration, price, capacity, meeting, published] = row.split(",").map(cell => cell.trim());
+            if (!tour) continue;
+            const numericCapacity = Number(capacity || 0);
+            await addDoc(collection(state.db, "agenda"), {
+                date,
+                time,
+                tour,
+                duration,
+                price,
+                capacity: numericCapacity,
+                booked: 0,
+                spots: numericCapacity ? `${numericCapacity} lugares disponibles` : "Cupos a confirmar",
+                meeting,
+                published: parseCsvBoolean(published),
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            });
+            count++;
+        }
+
+        event.target.reset();
+        setText("csv-feedback", `${count} salida(s) importada(s) y publicadas segun la columna publicado.`);
+    } catch (error) {
+        console.warn("No se pudo importar la agenda.", error);
+        setText("csv-feedback", getFirestoreMessage(error, "No se pudo importar la agenda."));
     }
-
-    event.target.reset();
-    setText("csv-feedback", `${count} salida(s) importada(s).`);
 }
 
 async function handlePaymentSubmit(event) {
     event.preventDefault();
     const { doc, serverTimestamp, setDoc } = state.firestore;
+
+    setText("payment-feedback", "Guardando datos de seña...");
 
     try {
         await setDoc(doc(state.db, "siteConfig", "payment"), {
@@ -196,19 +234,35 @@ async function handlePaymentSubmit(event) {
 }
 
 function subscribeAdminLists() {
-    subscribeAgenda();
-    subscribeReviews();
-    subscribeSuggestions();
-    subscribeRegistrations();
+    cleanupSubscriptions();
+    state.unsubscribers = [
+        subscribeAgenda(),
+        subscribeReviews(),
+        subscribeSuggestions(),
+        subscribeRegistrations()
+    ].filter(Boolean);
+    state.subscribed = true;
+}
+
+function cleanupSubscriptions() {
+    state.unsubscribers.forEach(unsubscribe => unsubscribe?.());
+    state.unsubscribers = [];
+    state.subscribed = false;
 }
 
 function subscribeAgenda() {
     const { collection, deleteDoc, doc, onSnapshot, orderBy, query } = state.firestore;
     const agendaQuery = query(collection(state.db, "agenda"), orderBy("date", "asc"));
 
-    onSnapshot(agendaQuery, snapshot => {
+    return onSnapshot(agendaQuery, snapshot => {
         const container = document.getElementById("admin-agenda-list");
         container.innerHTML = "";
+
+        if (snapshot.empty) {
+            renderEmpty(container, "Todavía no hay salidas cargadas.");
+            setText("admin-session-feedback", "Sesión iniciada. No hay salidas cargadas todavía.");
+            return;
+        }
 
         snapshot.docs.forEach(item => {
             const data = item.data();
@@ -220,19 +274,28 @@ function subscribeAgenda() {
                 <em>${data.published === false ? "Oculta" : "Publicada"} · ${escapeHtml(data.spots || "Cupos a confirmar")}</em>
             `);
             card.appendChild(actionButton("Editar", () => fillAgendaForm(item.id, data)));
-            card.appendChild(actionButton("Eliminar", () => deleteDoc(doc(state.db, "agenda", item.id))));
+            card.appendChild(actionButton("Eliminar", () => runAdminAction(
+                () => deleteDoc(doc(state.db, "agenda", item.id)),
+                "Salida eliminada."
+            )));
             container.appendChild(card);
         });
-    });
+        setText("admin-session-feedback", `Sesión iniciada. ${snapshot.size} salida(s) cargada(s).`);
+    }, error => handleAdminSnapshotError("admin-agenda-list", "No se pudo leer la agenda.", error));
 }
 
 function subscribeReviews() {
     const { collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc } = state.firestore;
     const reviewsQuery = query(collection(state.db, "reviews"), orderBy("createdAt", "desc"));
 
-    onSnapshot(reviewsQuery, snapshot => {
+    return onSnapshot(reviewsQuery, snapshot => {
         const container = document.getElementById("admin-reviews-list");
         container.innerHTML = "";
+
+        if (snapshot.empty) {
+            renderEmpty(container, "No hay reseñas pendientes.");
+            return;
+        }
 
         snapshot.docs.forEach(item => {
             const data = item.data();
@@ -241,20 +304,31 @@ function subscribeReviews() {
                 <span>${escapeHtml(data.text || "")}</span>
                 <em>${data.approved ? "Aprobada" : "Pendiente"}</em>
             `);
-            card.appendChild(actionButton("Aprobar", () => updateDoc(doc(state.db, "reviews", item.id), { approved: true })));
-            card.appendChild(actionButton("Eliminar", () => deleteDoc(doc(state.db, "reviews", item.id))));
+            card.appendChild(actionButton("Aprobar", () => runAdminAction(
+                () => updateDoc(doc(state.db, "reviews", item.id), { approved: true }),
+                "Reseña aprobada."
+            )));
+            card.appendChild(actionButton("Eliminar", () => runAdminAction(
+                () => deleteDoc(doc(state.db, "reviews", item.id)),
+                "Reseña eliminada."
+            )));
             container.appendChild(card);
         });
-    });
+    }, error => handleAdminSnapshotError("admin-reviews-list", "No se pudieron leer las reseñas.", error));
 }
 
 function subscribeSuggestions() {
     const { collection, doc, onSnapshot, orderBy, query, updateDoc } = state.firestore;
     const suggestionsQuery = query(collection(state.db, "suggestions"), orderBy("createdAt", "desc"));
 
-    onSnapshot(suggestionsQuery, snapshot => {
+    return onSnapshot(suggestionsQuery, snapshot => {
         const container = document.getElementById("admin-suggestions-list");
         container.innerHTML = "";
+
+        if (snapshot.empty) {
+            renderEmpty(container, "No hay sugerencias nuevas.");
+            return;
+        }
 
         snapshot.docs.forEach(item => {
             const data = item.data();
@@ -264,19 +338,27 @@ function subscribeSuggestions() {
                 <span>${escapeHtml(data.text || "")}</span>
                 <em>${escapeHtml(data.status || "new")}</em>
             `);
-            card.appendChild(actionButton("Marcar visto", () => updateDoc(doc(state.db, "suggestions", item.id), { status: "seen" })));
+            card.appendChild(actionButton("Marcar visto", () => runAdminAction(
+                () => updateDoc(doc(state.db, "suggestions", item.id), { status: "seen" }),
+                "Sugerencia marcada como vista."
+            )));
             container.appendChild(card);
         });
-    });
+    }, error => handleAdminSnapshotError("admin-suggestions-list", "No se pudieron leer las sugerencias.", error));
 }
 
 function subscribeRegistrations() {
     const { collection, doc, onSnapshot, orderBy, query, updateDoc } = state.firestore;
     const registrationsQuery = query(collection(state.db, "registrations"), orderBy("createdAt", "desc"));
 
-    onSnapshot(registrationsQuery, snapshot => {
+    return onSnapshot(registrationsQuery, snapshot => {
         const container = document.getElementById("admin-registrations-list");
         container.innerHTML = "";
+
+        if (snapshot.empty) {
+            renderEmpty(container, "No hay inscripciones registradas.");
+            return;
+        }
 
         snapshot.docs.forEach(item => {
             const data = item.data();
@@ -286,21 +368,33 @@ function subscribeRegistrations() {
                 <span>${escapeHtml(data.date || "")} · ${escapeHtml(data.people || "")} · ${escapeHtml(data.duration || "")}</span>
                 <em>${escapeHtml(data.status || "pending")}</em>
             `);
-            card.appendChild(actionButton("Confirmar", () => updateDoc(doc(state.db, "registrations", item.id), { status: "confirmed" })));
-            card.appendChild(actionButton("Seña recibida", () => updateDoc(doc(state.db, "registrations", item.id), { deposit: "received" })));
+            card.appendChild(actionButton("Confirmar", () => runAdminAction(
+                () => updateDoc(doc(state.db, "registrations", item.id), { status: "confirmed" }),
+                "Inscripción confirmada."
+            )));
+            card.appendChild(actionButton("Seña recibida", () => runAdminAction(
+                () => updateDoc(doc(state.db, "registrations", item.id), { deposit: "received" }),
+                "Seña registrada."
+            )));
             container.appendChild(card);
         });
-    });
+    }, error => handleAdminSnapshotError("admin-registrations-list", "No se pudieron leer las inscripciones.", error));
 }
 
 async function loadPaymentConfig() {
     const { doc, getDoc } = state.firestore;
-    const snap = await getDoc(doc(state.db, "siteConfig", "payment"));
-    if (!snap.exists()) return;
-    const data = snap.data();
-    document.getElementById("payment-details-admin").value = data.details || "";
-    document.getElementById("payment-link-admin").value = data.link || "";
-    document.getElementById("payment-label-admin").value = data.label || "";
+
+    try {
+        const snap = await getDoc(doc(state.db, "siteConfig", "payment"));
+        if (!snap.exists()) return;
+        const data = snap.data();
+        document.getElementById("payment-details-admin").value = data.details || "";
+        document.getElementById("payment-link-admin").value = data.link || "";
+        document.getElementById("payment-label-admin").value = data.label || "";
+    } catch (error) {
+        console.warn("No se pudieron leer los datos de seña.", error);
+        setText("payment-feedback", getFirestoreMessage(error, "No se pudieron leer los datos de seña."));
+    }
 }
 
 function fillAgendaForm(id, data) {
@@ -324,6 +418,34 @@ function adminCard(html) {
     return card;
 }
 
+function renderEmpty(container, message) {
+    if (!container) return;
+    const card = adminCard(`<span>${escapeHtml(message)}</span>`);
+    card.classList.add("admin-card--empty");
+    container.appendChild(card);
+}
+
+async function runAdminAction(action, successMessage) {
+    try {
+        setText("admin-session-feedback", "Aplicando cambio...");
+        await action();
+        setText("admin-session-feedback", successMessage);
+    } catch (error) {
+        console.warn("No se pudo completar la acción del panel.", error);
+        setText("admin-session-feedback", getFirestoreMessage(error, "No se pudo completar la acción."));
+    }
+}
+
+function handleAdminSnapshotError(containerId, message, error) {
+    console.warn(message, error);
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.innerHTML = "";
+        renderEmpty(container, getFirestoreMessage(error, message));
+    }
+    setText("admin-session-feedback", getFirestoreMessage(error, message));
+}
+
 function actionButton(label, onClick) {
     const button = document.createElement("button");
     button.className = "site-button site-button--small site-button--light";
@@ -339,6 +461,11 @@ function getValue(id) {
 
 function normalizeEmail(value) {
     return String(value || "").trim().toLowerCase();
+}
+
+function parseCsvBoolean(value) {
+    const normalized = String(value || "").trim().toLowerCase();
+    return !["false", "falso", "0", "no", "oculto", "oculta"].includes(normalized);
 }
 
 function setText(id, value) {
@@ -365,4 +492,13 @@ function getFirebaseMessage(error) {
     if (code.includes("auth/network-request-failed")) return "No hay conexión con Firebase.";
     if (code.includes("auth/operation-not-allowed")) return "Activá Email/Password en Firebase Authentication.";
     return "No se pudo ingresar.";
+}
+
+function getFirestoreMessage(error, fallback) {
+    const code = error?.code || "";
+    if (code.includes("permission-denied")) return "Firebase no dio permiso para esta acción. Revisá que hayas iniciado sesión como Ignacio y que las reglas estén publicadas.";
+    if (code.includes("failed-precondition")) return "Firebase necesita un índice para esta consulta o tiene una condición pendiente.";
+    if (code.includes("unavailable")) return "Firebase no está disponible ahora. Probá de nuevo en unos minutos.";
+    if (code.includes("not-found")) return "Ese registro ya no existe.";
+    return fallback;
 }

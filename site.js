@@ -127,6 +127,19 @@ function initForms() {
     document.getElementById("logout-user-btn")?.addEventListener("click", () => {
         state.authFns?.signOut(state.auth);
     });
+
+    initPasswordToggles();
+}
+
+function initPasswordToggles() {
+    document.querySelectorAll("[data-toggle-password]").forEach(toggle => {
+        const input = document.getElementById(toggle.dataset.togglePassword);
+        if (!input) return;
+
+        toggle.addEventListener("change", () => {
+            input.type = toggle.checked ? "text" : "password";
+        });
+    });
 }
 
 async function initFirebase() {
@@ -363,27 +376,34 @@ function updateAuthUI(user) {
 }
 
 function subscribeAgenda() {
-    const { collection, onSnapshot, orderBy, query } = state.firestore;
-    const agendaQuery = query(collection(state.db, "agenda"), orderBy("date", "asc"));
+    const { collection, onSnapshot, query, where } = state.firestore;
+    const agendaQuery = query(collection(state.db, "agenda"), where("published", "==", true));
 
     onSnapshot(agendaQuery, snapshot => {
         const items = snapshot.docs
             .map(doc => ({ id: doc.id, ...doc.data() }))
-            .filter(item => item.published !== false);
+            .sort(compareAgendaItems);
         renderAgenda(items.length ? items : fallbackAgenda);
-    }, () => renderAgenda(fallbackAgenda));
+    }, error => {
+        console.warn("No se pudo leer la agenda publicada.", error);
+        renderAgenda(fallbackAgenda);
+        setText("selected-agenda-feedback", "No se pudo cargar la agenda publicada. Podés consultar por WhatsApp.");
+    });
 }
 
 function subscribeReviews() {
-    const { collection, onSnapshot, orderBy, query } = state.firestore;
-    const reviewsQuery = query(collection(state.db, "reviews"), orderBy("createdAt", "desc"));
+    const { collection, onSnapshot, query, where } = state.firestore;
+    const reviewsQuery = query(collection(state.db, "reviews"), where("approved", "==", true));
 
     onSnapshot(reviewsQuery, snapshot => {
         const items = snapshot.docs
             .map(doc => ({ id: doc.id, ...doc.data() }))
-            .filter(item => item.approved === true);
+            .sort(compareCreatedDesc);
         renderReviews(items.length ? items : fallbackReviews);
-    }, () => renderReviews(fallbackReviews));
+    }, error => {
+        console.warn("No se pudieron leer las reseñas aprobadas.", error);
+        renderReviews(fallbackReviews);
+    });
 }
 
 async function loadPaymentConfig() {
@@ -509,6 +529,18 @@ function capacityLabel(item) {
     if (!capacity) return "";
     const booked = Number(item.booked || 0);
     return `${Math.max(capacity - booked, 0)} lugares disponibles`;
+}
+
+function compareAgendaItems(a, b) {
+    const left = `${a.date || "9999-12-31"} ${a.time || "99:99"}`;
+    const right = `${b.date || "9999-12-31"} ${b.time || "99:99"}`;
+    return left.localeCompare(right);
+}
+
+function compareCreatedDesc(a, b) {
+    const left = a.createdAt?.toMillis?.() || 0;
+    const right = b.createdAt?.toMillis?.() || 0;
+    return right - left;
 }
 
 function getValue(id) {
