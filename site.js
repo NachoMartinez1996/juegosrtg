@@ -15,6 +15,8 @@ const state = {
 };
 
 initViews();
+initPwaInstallPrompt();
+registerServiceWorker();
 initWhatsappButtons();
 initForms();
 initFirebase();
@@ -57,6 +59,49 @@ function initViews() {
 
 function getHashView() {
     return window.location.hash.replace("#", "") || "inicio";
+}
+
+let deferredInstallPrompt = null;
+
+function initPwaInstallPrompt() {
+    const installButton = document.getElementById("install-app-btn");
+    if (!installButton) return;
+
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+    if (isStandalone) {
+        installButton.hidden = true;
+        return;
+    }
+
+    window.addEventListener("beforeinstallprompt", event => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        installButton.hidden = false;
+    });
+
+    installButton.addEventListener("click", async () => {
+        if (!deferredInstallPrompt) return;
+
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        installButton.hidden = true;
+    });
+
+    window.addEventListener("appinstalled", () => {
+        deferredInstallPrompt = null;
+        installButton.hidden = true;
+    });
+}
+
+function registerServiceWorker() {
+    if (!("serviceWorker" in navigator) || window.location.protocol === "file:") return;
+
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(error => {
+            console.warn("No se pudo registrar el service worker.", error);
+        });
+    });
 }
 
 function initWhatsappButtons() {

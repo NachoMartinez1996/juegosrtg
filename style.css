@@ -1293,7 +1293,7 @@ body.tour-site {
     margin: 12px auto 0;
     padding: 10px 12px;
     display: grid;
-    grid-template-columns: minmax(220px, 1fr) auto auto;
+    grid-template-columns: minmax(220px, 1fr) auto auto auto;
     align-items: center;
     gap: 16px;
     border: 1px solid rgba(20, 50, 74, 0.12);
@@ -1301,6 +1301,10 @@ body.tour-site {
     background: rgba(255, 255, 255, 0.86);
     box-shadow: 0 14px 34px rgba(11, 52, 89, 0.12);
     backdrop-filter: blur(14px);
+}
+
+.install-button[hidden] {
+    display: none;
 }
 
 .brand-mark {
@@ -1935,6 +1939,13 @@ body.tour-site {
     color: var(--brand-blue);
     font-weight: 700;
     line-height: 1.35;
+}
+
+.form-hint {
+    margin: 0;
+    color: rgba(20, 50, 74, 0.72);
+    font-size: 0.95rem;
+    line-height: 1.45;
 }
 
 .site-footer {

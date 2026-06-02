@@ -39,13 +39,15 @@
             <form class="booking-form" id="admin-login-form">
                 <label>
                     Email
-                    <input id="admin-email" type="email" autocomplete="email" required>
+                    <input id="admin-email" type="email" autocomplete="email" value="ignaciomartinez21@hotmail.com" required>
                 </label>
                 <label>
                     Contraseña
                     <input id="admin-password" type="password" autocomplete="current-password" required>
                 </label>
                 <button class="site-button" type="submit">Ingresar</button>
+                <button class="site-button site-button--small site-button--light" id="admin-reset-password" type="button">Crear o recuperar contrase&ntilde;a</button>
+                <p class="form-hint">Usuario admin: ignaciomartinez21@hotmail.com. La contrase&ntilde;a se configura desde Firebase Auth.</p>
                 <p class="form-feedback" id="admin-login-feedback" aria-live="polite"></p>
             </form>
         </section>

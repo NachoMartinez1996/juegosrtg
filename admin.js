@@ -48,6 +48,11 @@ async function initAdmin() {
 }
 
 function bindAdminEvents() {
+    const adminEmailInput = document.getElementById("admin-email");
+    if (adminEmailInput && !adminEmailInput.value) {
+        adminEmailInput.value = ADMIN_EMAIL;
+    }
+
     document.getElementById("admin-login-form")?.addEventListener("submit", async event => {
         event.preventDefault();
         try {
@@ -56,6 +61,17 @@ function bindAdminEvents() {
                 getValue("admin-email"),
                 getValue("admin-password")
             );
+        } catch (error) {
+            setText("admin-login-feedback", getFirebaseMessage(error));
+        }
+    });
+
+    document.getElementById("admin-reset-password")?.addEventListener("click", async () => {
+        const email = getValue("admin-email") || ADMIN_EMAIL;
+
+        try {
+            await state.authFns.sendPasswordResetEmail(state.auth, email);
+            setText("admin-login-feedback", `Te envi\u00e9 un mail para crear o recuperar la contrase\u00f1a de ${email}.`);
         } catch (error) {
             setText("admin-login-feedback", getFirebaseMessage(error));
         }

@@ -1,9 +1,9 @@
-const VERSION_CACHE = "1.3.00";
+const VERSION_CACHE = "1.4.00";
 const CACHE_SHELL = `rosario-shell-${VERSION_CACHE}`;
 const CACHE_RUNTIME = `rosario-runtime-${VERSION_CACHE}`;
 const HOME_SHELL = "./index.html";
 const GAME_SHELL = "./juegos.html";
-const APP_SHELL = GAME_SHELL;
+const APP_SHELL = HOME_SHELL;
 
 const shellFiles = [
     "./",
@@ -21,6 +21,7 @@ const shellFiles = [
     "./Favicon/favicon-16x16.png",
     "./Favicon/apple-icon-180x180.png",
     "./Favicon/android-icon-192x192.png",
+    "./android-chrome-512x512.png",
     "./Logo.png",
     "./Logos/LogoGemini.png",
     "./castagnino.jpg",

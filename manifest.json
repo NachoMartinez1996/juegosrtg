@@ -1,16 +1,16 @@
 {
-    "id": "./juegos.html",
+    "id": "./",
     "lang": "es-AR",
     "dir": "ltr",
-    "name": "El Mago de los Tours | Juegos de Rosario",
-    "short_name": "Juegos Rosario",
-    "description": "Juego de memoria y desafío de trivias sobre Rosario para jugar online u offline.",
+    "name": "El Mago de los Tours | Rosario a la Carta",
+    "short_name": "Mago Tours",
+    "description": "Recorridos guiados por Rosario con Ignacio Ariel Martinez: historia, barrios, memoria, futbol y patrimonio a la carta.",
     "categories": [
-        "games",
+        "travel",
         "education",
-        "travel"
+        "entertainment"
     ],
-    "start_url": "./juegos.html",
+    "start_url": "./index.html",
     "scope": "./",
     "display": "standalone",
     "background_color": "#fbf4de",
@@ -19,12 +19,14 @@
         {
             "src": "./Favicon/android-icon-192x192.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
         },
         {
-            "src": "./Favicon/apple-icon-180x180.png",
-            "sizes": "180x180",
-            "type": "image/png"
+            "src": "./android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
         }
     ]
 }
